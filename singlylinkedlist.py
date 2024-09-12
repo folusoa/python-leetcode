@@ -21,52 +21,7 @@ class LinkedList:
         self.head = newNode
         self.tail = newNode
         self.length = 1
-    
-    #create a new Node, then add it     
-    #self is a linked list
-    def addValue(self, value):
 
-        #if the list is empty
-        if self.head is None: 
-            newNode = Node(value)
-            self.head = newNode
-            self.tail = newNode
-            
-        #the list is not empty
-        else: 
-            newNode = Node(value)
-            curr = self.tail
-            curr.next = newNode
-            self.tail = newNode    
-
-        self.length += 1
-
-    #get an element from the linked list by it's index 
-    def get(self, index): 
-
-        #edge case: LL is empty
-        if self.length == 0: 
-            print("The list is empty")
-            return None
-        
-        #make sure it is a valid index   
-        if index >= 0 and index < self.length: 
-
-            itr = self.head
-            l_index = 0
-            while itr is not None: 
-
-                if l_index == index:
-                    return itr.value
-                
-                itr = itr.next
-                l_index+=1
-                
-            return itr
-        
-        else:
-            print("Invalid Index")
-      
     #add a value to the top of the list 
     def prepend(self, value):
         newNode = Node(value)
@@ -78,30 +33,116 @@ class LinkedList:
         else:         
             newNode.next = self.head
             self.head = newNode 
+        
         self.length += 1
+        return newNode
+
+    
+    #add a value to the end of a Linked List
+    def append(self, value): 
+
+        newNode = Node(value)
+        if self.length: 
+            itr = self.tail
+            itr.next = newNode
+            self.tail = newNode
+
+        else: 
+            self.head = newNode
+            self.tail = newNode
+
+        self.length += 1
+        return newNode
+
 
     #remove the first node
     def popFirst(self):
+
+        #empty list
         if self.length == 0: 
             return None
         
-        iter = self.head
-        self.head = iter.next
-        iter.next = None
-        self.length -= 1
-        if self.length == 0: 
-            self.tail == 0
+        if self.length: 
+
+            #single node
+            if self.head == self.tail: 
+                temp = self.head
+                self.head = self.tail = None
+                self.length -= 1
+                return temp
+    
+            else: 
+                itr = self.head
+                self.head = itr.next
+                itr.next = None   
+                self.length -= 1
+                return itr
+
+
+    #get an element from the linked list by it's index 
+    #returns a pointer to the node holding that value 
+    def get(self, index): 
+        
+        #make sure it is a valid index   
+        #returns none if the list is empty
+        if index >= 0 and index < self.length: 
+
+            itr = self.head
+            for i in range(index):
+                itr = itr.next
+            return itr
+         
+        return None 
+
+    #change the value of an element in a linked list given the index
+    def setV(self, index, value): 
+
+        itr = self.get(index)
+
+        if itr: 
+            itr.value = value
+            #return True
+
+        #return False
+
+        return itr
+    
+    #insert a node at a particular index
+    def insert(self, index, value): 
+
+        newNode = Node(value)
+        #edge case: insert at the head
+        if index == 0:
+            return self.prepend(value)
+        
+        #edge case: insert at the tail
+        if index == self.length:
+            return self.append(value)
+        
+        elif index > 0 and index < self.length: 
+            
+            prev = self.get(index-1)
+            itr = prev.next 
+
+            prev.next = newNode 
+            newNode.next  = itr
+            return newNode
+
+        #invalid Index 
+        return None
 
     #remove a node from the end of a LL
-    #we do not care about the value
+    #we do not care about the value or the index    
     def pop(self): 
 
         if self.length == 0: 
             return None
         
         elif self.head == self.tail:
+            curr = self.head
             self.head = self.tail = None
             self.length -= 1
+            return curr
         
         else:
             pre = curr = self.head
@@ -114,8 +155,31 @@ class LinkedList:
             pre.next = None
             self.length -= 1
             
-        return curr
+            return curr
     
+    #remove a node at a particular index
+    def remove(self, index): 
+
+        #methods already have return statements
+        if index == 0: 
+            return self.popFirst()
+            
+        if index == self.length-1: 
+            return self.pop()
+            
+        elif index > 0 and index < self.length: 
+            prev = self.get(index-1)
+            
+            if prev.next: 
+                node = prev.next
+                prev.next = node.next
+                node.next = None
+                self.length -= 1
+            
+                return node
+            
+        return None
+
     #removes a node by value from a LL 
     def removeNode(self, value):
 
@@ -155,10 +219,39 @@ class LinkedList:
             if self.length == 1:
                 self.tail = self.head
 
-              
+    def reverseList(self): 
+
+        if self.length > 0: 
+
+            if self.length == 1: 
+                return self
+            
+            prev = None
+            curr = self.head 
+            frwd = curr.next
+           
+            while frwd != None:
+                curr.next = prev
+                prev = curr
+                curr = frwd
+                frwd = frwd.next
+            
+            curr.next = prev
+            
+            #swap the head and tail 
+            my_temp = self.head
+            self.head = self.tail 
+            self.tail = my_temp  
+            
+            return self
+
+        return None
+
+
     def printLL(self): 
         if self.length == 0:
             print("The list is empty")
+
         #goal is to have a pointer that inherits the same abilities as the head pointer. 
         iter = self.head
         while iter != None: 
@@ -167,75 +260,42 @@ class LinkedList:
 
     
 def main(): 
+    my_linked_list = LinkedList(1)
+    my_linked_list.append(2)
+    my_linked_list.append(3)
+    my_linked_list.append(4)
+   
+    my_linked_list.printLL()
 
-    myLinkedList = LinkedList(0)
-    #myLinkedList.removeNode(0)
-    #head = myLinkedList.head.value
+    my_linked_list.reverseList()
 
-    #print("LL head: ", head)
+    print('\nLL after reverse():')
+    my_linked_list.printLL()
+    print(my_linked_list.head.value)
+    print(my_linked_list.tail.value)
 
-    for i in range(0, 6): 
-        myLinkedList.addValue(i*30+i-12)
+    my_linked_list.removeNode(2)
+    my_linked_list.removeNode(3)
+    my_linked_list.removeNode(4)
 
-    print("linked list before removing the node")    
-    myLinkedList.printLL()
 
-    print("Length: ", myLinkedList.length)
+    print('\nLL after removeNode():')
+    my_linked_list.printLL()
 
-    for each in range(0, myLinkedList.length): 
-        print("value at", each,":", myLinkedList.get(each))
 
-    #for i in range(0, myLinkedList.length): 
-        #print("i: ", i)
-    node = 1
-    #myLinkedList.removeNode(node)   
-    myLinkedList.pop()
-
-    print("LL head: ", myLinkedList.head.value)
-    print("LL tail: ", myLinkedList.tail.value)
-
-    node = myLinkedList.tail.value
-    myLinkedList.removeNode(node)
-
-    print("LL tail after removing prev tail: ", myLinkedList.tail.value)
-
-    node = myLinkedList.head.value
-    #for i in range(0,2):
-        #myLinkedList.removeNode(node)
-
-    #print("LL head after removing prev: ", myLinkedList.head.value)
-
-    myLinkedList.pop()
-    print("linked list after removing the node")
-
-    myLinkedList.prepend(33)
-    myLinkedList.printLL()
-    print("head: ", myLinkedList.head.value)
-
-    print("LL length: ", myLinkedList.length)
-
-    testLL = LinkedList(23)
-    testLL.prepend(30)
-    testLL.printLL()
-
-    print('LL head: ', testLL.head.value)
-    print('LL tail: ', testLL.tail.value)
-
-    testLL.pop()
-    testLL.popFirst()
-
-    print("testLL after operations")
-    testLL.printLL()
-
-    testLL.get(2)
-
-    print(myLinkedList.get(2))
+    my_linked_list.reverseList()
     
+    print('\nLL after reverse():')
+    my_linked_list.printLL()
+    print(my_linked_list.head.value)
+    print(my_linked_list.tail.value)
 
-    #print("after")
-    #print('LL head: ', testLL.head.value)
-    #print('LL tail: ', testLL.tail.value)
-    
+    my_linked_list.pop()
+    print('\nLL after pop():')
+    my_linked_list.printLL()
+    print(my_linked_list.head.value)
+    print(my_linked_list.tail.value)
+
 
 if __name__ == "__main__": 
     main()
